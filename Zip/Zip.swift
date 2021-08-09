@@ -540,7 +540,7 @@ public class Zip {
         
         let validFileExtensions: Set<String> = customFileExtensions.union(["zip", "cbz"])
         
-        return validFileExtensions.contains(fileExtension)
+        return validFileExtensions.contains(fileExtension.lowercased())
     }
     
     // MARK: - private methods
