@@ -276,7 +276,13 @@ public class Zip {
                 }
                 progress.completedUnitCount = Int64(currentPosition)
                 zipCloseFileInZip(zip)
+#if !os(iOS)
+                if let buffer = buffer {
+                    free(buffer)
+                }
+#else
                 free(buffer)
+#endif
                 fclose(input)
             }
         }
@@ -387,7 +393,13 @@ public class Zip {
                 progressTracker.completedUnitCount = Int64(currentPosition)
                 
                 zipCloseFileInZip(zip)
+#if !os(iOS)
+                if let buffer = buffer {
+                    free(buffer)
+                }
+#else
                 free(buffer)
+#endif
                 fclose(input)
             }
         }
