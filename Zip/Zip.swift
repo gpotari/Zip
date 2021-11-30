@@ -608,7 +608,8 @@ public class Zip {
             unzGetCurrentFileInfo64(zip, &fileInfo, fileName, UInt(fileNameSize), nil, 0, nil, 0)
             fileName[Int(fileInfo.size_filename)] = 0
 
-            var pathString = String(cString: fileName)
+            //TODO: String(cString should accept encoding but we don't get it from zip library
+            var pathString = String(cString: fileName).safeEncoding()
             
             guard pathString.count > 0 else {
                 throw ZipError.unzipFail
@@ -725,4 +726,19 @@ public class Zip {
         return totalSize
     }
     
+}
+
+extension String {
+    func safeEncoding() -> String {
+        let nonAlphanumericCharacterSet = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: ".")).inverted
+        let components = self.components(separatedBy:"/")
+            .map {
+                $0
+                    .components(separatedBy: nonAlphanumericCharacterSet)
+                    .filter { $0.count > 0 }
+                    .joined(separator: "_")
+            }
+
+        return components.joined(separator: "/")
+    }
 }
