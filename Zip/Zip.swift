@@ -608,8 +608,7 @@ public class Zip {
             unzGetCurrentFileInfo64(zip, &fileInfo, fileName, UInt(fileNameSize), nil, 0, nil, 0)
             fileName[Int(fileInfo.size_filename)] = 0
 
-            //TODO: String(cString should accept encoding but we don't get it from zip library
-            var pathString = String(cString: fileName).safeEncoding()
+            var pathString = decodedPathString(from: fileName, length: Int(fileInfo.size_filename))
             
             guard pathString.count > 0 else {
                 throw ZipError.unzipFail
@@ -724,6 +723,16 @@ public class Zip {
             totalSize += attributeFileSize
         }
         return totalSize
+    }
+
+    private class func decodedPathString(from fileName: UnsafePointer<CChar>, length: Int) -> String {
+        let bytes = UnsafeBufferPointer(start: UnsafeRawPointer(fileName).assumingMemoryBound(to: UInt8.self),
+                                        count: length)
+        if let pathString = String(bytes: bytes, encoding: .utf8) {
+            return pathString
+        }
+
+        return String(cString: fileName).safeEncoding()
     }
     
 }

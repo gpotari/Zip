@@ -13,6 +13,7 @@ extension ZipTests {
         ("testFileExtensionIsNotInvalidForValidUrl", testFileExtensionIsNotInvalidForValidUrl),
         ("testImplicitProgressUnzip", testImplicitProgressUnzip),
         ("testImplicitProgressZip", testImplicitProgressZip),
+        ("testUnzipPreservesPunctuationInFileNames", testUnzipPreservesPunctuationInFileNames),
         ("testQuickUnzip", testQuickUnzip),
         ("testQuickUnzipNonExistingPath", testQuickUnzipNonExistingPath),
         ("testQuickUnzipNonZipPath", testQuickUnzipNonZipPath),

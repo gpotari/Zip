@@ -106,6 +106,25 @@ class ZipTests: XCTestCase {
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationPath.path))
     }
+
+    func testUnzipPreservesPunctuationInFileNames() throws {
+        let fileManager = FileManager.default
+        let sourceFolder = try autoRemovingSandbox()
+        let hyphenFile = sourceFolder.appendingPathComponent("SLZ-001")
+        let plusFile = sourceFolder.appendingPathComponent("SLZ+001")
+        try "hyphen".write(to: hyphenFile, atomically: true, encoding: .utf8)
+        try "plus".write(to: plusFile, atomically: true, encoding: .utf8)
+
+        let zipFilePath = try autoRemovingSandbox().appendingPathComponent("punctuation.zip")
+        try Zip.zipFiles(paths: [hyphenFile, plusFile], zipFilePath: zipFilePath, password: nil, progress: nil)
+
+        let destinationPath = try autoRemovingSandbox()
+        try Zip.unzipFile(zipFilePath, destination: destinationPath, overwrite: true, password: nil, progress: nil)
+
+        XCTAssertEqual(try String(contentsOf: destinationPath.appendingPathComponent("SLZ-001")), "hyphen")
+        XCTAssertEqual(try String(contentsOf: destinationPath.appendingPathComponent("SLZ+001")), "plus")
+        XCTAssertFalse(fileManager.fileExists(atPath: destinationPath.appendingPathComponent("SLZ_001").path))
+    }
     
     func testImplicitProgressUnzip() throws {
         let progress = Progress(totalUnitCount: 1)
